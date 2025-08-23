@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canadian Weather Comparison - Historical Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .weather-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .temperature {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stats {
+            font-size: 1.1rem;
+            color: #34495e;
+        }
+        .city-select {
+            margin-bottom: 30px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .data-source {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .chart-container {
+            margin-top: 20px;
+            height: 300px;
+        }
+        .seasonal-stats {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .season-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .seasonal-chart-container {
+            margin-top: 20px;
+            height: 400px;
+        }
+        .export-btn {
+            margin-top: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Canadian Weather Comparison</h1>
+        <p class="text-center text-muted">2-Year Historical Weather Analysis</p>
+        
+        <div class="row justify-content-center city-select">
+            <div class="col-md-6">
+                <select id="city2" class="form-select">
+                    <option value="">Select a city to compare with Calgary</option>
+                    <option value="Toronto">Toronto</option>
+                    <option value="Vancouver">Vancouver</option>
+                    <option value="Montreal">Montreal</option>
+                    <option value="Edmonton">Edmonton</option>
+                    <option value="Ottawa">Ottawa</option>
+                    <option value="Winnipeg">Winnipeg</option>
+                    <option value="Halifax">Halifax</option>
+                    <option value="Quebec City">Quebec City</option>
+                    <option value="Regina">Regina</option>
+                    <option value="St. John's">St. John's</option>
+                    <option value="Victoria">Victoria</option>
+                    <option value="Saskatoon">Saskatoon</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="weather-card">
+                    <h2>Calgary</h2>
+                    <div id="calgary-weather" class="weather-data">Loading...</div>
+                    <div class="seasonal-stats" id="calgary-seasonal"></div>
+                    <div class="chart-container">
+                        <canvas id="calgary-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="weather-card">
+                    <h2 id="comparison-city">Selected City</h2>
+                    <div id="comparison-weather" class="weather-data">Please select a city to compare</div>
+                    <div class="seasonal-stats" id="comparison-seasonal"></div>
+                    <div class="chart-container">
+                        <canvas id="comparison-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seasonal Comparison Charts -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="weather-card">
+                    <h3 class="text-center">Seasonal Comparisons</h3>
+                    <div class="seasonal-chart-container">
+                        <canvas id="seasonal-comparison-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Button -->
+        <div class="row mt-4">
+            <div class="col-md-4 mx-auto">
+                <button id="export-btn" class="btn btn-primary export-btn" disabled>
+                    Export Weather Data (CSV)
+                </button>
+            </div>
+        </div>
+        
+        <div class="data-source">
+            Data source: Environment Canada Climate Data (Historical data from past 2 years)
+        </div>
+    </div>
+
+    <script>
+        let calgaryChart = null;
+        let comparisonChart = null;
+        let seasonalChart = null;
+
+        function createChart(canvasId, data, label) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            if (canvasId === 'calgary-chart' && calgaryChart) {
+                calgaryChart.destroy();
+            } else if (canvasId === 'comparison-chart' && comparisonChart) {
+                comparisonChart.destroy();
+            }
+
+            const dates = data.map(d => d.date);
+            const temps = data.map(d => d.temp);
+            const precip = data.map(d => d.precip);
+            const snow = data.map(d => d.snow);
+
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: temps,
+                            borderColor: '#e74c3c',
+                            yAxisID: 'y',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Precipitation (mm)',
+                            data: precip,
+                            borderColor: '#3498db',
+                            yAxisID: 'y1',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Snow (cm)',
+                            data: snow,
+                            borderColor: '#95a5a6',
+                            yAxisID: 'y1',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxTicksLimit: 12
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Precipitation/Snow'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '2-Year Weather Trends'
+                        }
+                    }
+                }
+            });
+
+            if (canvasId === 'calgary-chart') {
+                calgaryChart = chart;
+            } else {
+                comparisonChart = chart;
+            }
+        }
+
+        function createSeasonalHTML(seasonalData) {
+            return `
+                <h4>Seasonal Averages</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><span class="season-label">Spring:</span> ${seasonalData.Spring}°C</p>
+                        <p><span class="season-label">Summer:</span> ${seasonalData.Summer}°C</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><span class="season-label">Fall:</span> ${seasonalData.Fall}°C</p>
+                        <p><span class="season-label">Winter:</span> ${seasonalData.Winter}°C</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createWeatherHTML(weatherData) {
+            if (weatherData.error) {
+                return `<div class="alert alert-danger">${weatherData.error}</div>`;
+            }
+
+            const current = weatherData.current;
+            const historical = weatherData.historical;
+
+            return `
+                <div class="current-weather">
+                    <h3>Current Conditions</h3>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="temperature">${current.temp}°C</span>
+                    </div>
+                    <div class="stats">
+                        <p class="text-capitalize">Conditions: ${current.description}</p>
+                        <p>Humidity: ${current.humidity}%</p>
+                        <p>Wind Speed: ${Math.round(current.wind_speed * 10) / 10} m/s</p>
+                        <p>Current Precipitation: ${current.precip} mm</p>
+                        <p>Snow on Ground: ${current.snow} cm</p>
+                        <hr>
+                        <h4>30-Year Statistics</h4>
+                        <p>Average Temperature: ${historical.avg_temp}°C</p>
+                        <p>Total Annual Precipitation: ${Math.round(historical.total_precip/30)} mm</p>
+                        <p>Average Annual Snowfall: ${Math.round(historical.total_snow/30)} cm</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createSeasonalComparisonChart(calgaryData, comparisonData, comparisonCity) {
+            const ctx = document.getElementById('seasonal-comparison-chart').getContext('2d');
+            
+            if (seasonalChart) {
+                seasonalChart.destroy();
+            }
+
+            const seasons = ['Spring', 'Summer', 'Fall', 'Winter'];
+            const calgaryTemps = seasons.map(season => calgaryData.historical.seasonal_averages.temperatures[season]);
+            const comparisonTemps = seasons.map(season => comparisonData.historical.seasonal_averages.temperatures[season]);
+            const calgaryPrecip = seasons.map(season => calgaryData.historical.seasonal_averages.precipitation[season]);
+            const comparisonPrecip = seasons.map(season => comparisonData.historical.seasonal_averages.precipitation[season]);
+            const calgarySnow = seasons.map(season => calgaryData.historical.seasonal_averages.snow[season]);
+            const comparisonSnow = seasons.map(season => comparisonData.historical.seasonal_averages.snow[season]);
+
+            seasonalChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: seasons,
+                    datasets: [
+                        {
+                            label: 'Calgary Temperature (°C)',
+                            data: calgaryTemps,
+                            backgroundColor: 'rgba(231, 76, 60, 0.5)',
+                            borderColor: '#e74c3c',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: `${comparisonCity} Temperature (°C)`,
+                            data: comparisonTemps,
+                            backgroundColor: 'rgba(52, 152, 219, 0.5)',
+                            borderColor: '#3498db',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Calgary Precipitation (mm)',
+                            data: calgaryPrecip,
+                            backgroundColor: 'rgba(46, 204, 113, 0.5)',
+                            borderColor: '#2ecc71',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: `${comparisonCity} Precipitation (mm)`,
+                            data: comparisonPrecip,
+                            backgroundColor: 'rgba(155, 89, 182, 0.5)',
+                            borderColor: '#9b59b6',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: 'Calgary Snow (cm)',
+                            data: calgarySnow,
+                            backgroundColor: 'rgba(149, 165, 166, 0.5)',
+                            borderColor: '#95a5a6',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: `${comparisonCity} Snow (cm)`,
+                            data: comparisonSnow,
+                            backgroundColor: 'rgba(241, 196, 15, 0.5)',
+                            borderColor: '#f1c40f',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Precipitation/Snow'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Seasonal Weather Comparison'
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportData() {
+            const city2 = document.getElementById('city2').value;
+            if (!city2) return;
+
+            fetch('./export_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    city1: 'Calgary',
+                    city2: city2
+                })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `weather_comparison_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function updateWeather() {
+            const city2 = document.getElementById('city2').value;
+            
+            // Always fetch Calgary data, even if no comparison city is selected
+            fetch('./get_weather', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    city1: 'Calgary',
+                    city2: city2 || null  // Send null if no city is selected
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update Calgary weather
+                const calgaryData = data.city1;
+                document.querySelector('#calgary-weather').innerHTML = createWeatherHTML(calgaryData);
+                document.querySelector('#calgary-seasonal').innerHTML = createSeasonalHTML(calgaryData.historical.seasonal_averages.temperatures);
+                createChart('calgary-chart', calgaryData.historical.monthly_data, 'Calgary');
+
+                // Update comparison city weather if one is selected
+                if (city2) {
+                    document.getElementById('comparison-city').textContent = city2;
+                    document.getElementById('export-btn').disabled = false;
+                    const comparisonData = data.city2;
+                    document.querySelector('#comparison-weather').innerHTML = createWeatherHTML(comparisonData);
+                    document.querySelector('#comparison-seasonal').innerHTML = createSeasonalHTML(comparisonData.historical.seasonal_averages.temperatures);
+                    createChart('comparison-chart', comparisonData.historical.monthly_data, city2);
+                    createSeasonalComparisonChart(calgaryData, comparisonData, city2);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.querySelector('#calgary-weather').innerHTML = 'Error loading weather data. Please try again.';
+                if (city2) {
+                    document.querySelector('#comparison-weather').innerHTML = 'Error loading weather data. Please try again.';
+                }
+            });
+        }
+
+        // Add event listeners
+        document.getElementById('city2').addEventListener('change', updateWeather);
+        document.getElementById('export-btn').addEventListener('click', exportData);
+
+        // Initial weather update for Calgary
+        document.addEventListener('DOMContentLoaded', updateWeather);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,11 @@
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+jupyter
+requests
+beautifulsoup4
+Flask==3.0.2
+python-dotenv==1.0.1
+flask-cors==4.0.0
