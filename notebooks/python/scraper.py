@@ -19,6 +19,9 @@ except ImportError:
     print("Please ensure 'config.py' exists in the same directory as this script.")
     exit()
 
+# --- ADD THIS LINE FOR DEBUGGING ---
+print(f"--- Config loaded. Found {len(CITIES)} cities: {list(CITIES.keys())} ---")
+
 print("--- Weather Data Scraper ---")
 
 # --- Constants ---

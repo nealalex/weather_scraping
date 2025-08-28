@@ -26,48 +26,6 @@ CITIES = {
             "data_type": "daily",
         },
     ],
-    "Fort St. John": [
-        {
-            "station_id": 1413,
-            "station_name": "FORT_ST_JOHN_A",
-            "start_year": 1953,
-            "end_year": 2012,
-            "data_type": "daily",
-        },
-        {
-            "station_id": 55198,
-            "station_name": "FORT_ST_JOHN_AIRPORT",
-            "start_year": 2021,
-            "end_year": 2025,
-            "data_type": "daily",
-        },
-    ],
-    "Vancouver": [
-        {
-            "station_id": 51442,
-            "station_name": "VANCOUVER_INTL_A",
-            "start_year": 2013,
-            "end_year": 2025,
-            "data_type": "daily",
-        }
-    ],
-    # --- NEW STATIONS ADDED BELOW ---
-"Victoria": [
-        {
-            "station_id": 1202,
-            "station_name": "VICTORIA_INTL_A_OLD", # Renamed to be clear
-            "start_year": 1953,
-            "end_year": 2013, # Adjusted end year
-            "data_type": "daily",
-        },
-        { # ADD THIS ENTIRE NEW BLOCK
-            "station_id": 51337,
-            "station_name": "VICTORIA_INTL_A",
-            "start_year": 2013,
-            "end_year": 2025, # Or your desired end year
-            "data_type": "daily",
-        }
-    ],
     "Edmonton": [
         {
             "station_id": 1867,
@@ -80,6 +38,22 @@ CITIES = {
             "station_id": 50149,
             "station_name": "EDMONTON_INTL_CS",
             "start_year": 2012,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
+    "Fort St. John": [
+        {
+            "station_id": 1413,
+            "station_name": "FORT_ST_JOHN_A",
+            "start_year": 1953,
+            "end_year": 2012,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 55198,
+            "station_name": "FORT_ST_JOHN_AIRPORT",
+            "start_year": 2021,
             "end_year": 2025,
             "data_type": "daily",
         },
@@ -100,6 +74,87 @@ CITIES = {
             "data_type": "daily",
         },
     ],
+    # --- NEW CITY: HALIFAX ---
+    "Halifax": [
+        {
+            "station_id": 6358,
+            "station_name": "HALIFAX_STANFIELD_INTL_A_OLD",
+            "start_year": 1953,
+            "end_year": 2012,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 50620,
+            "station_name": "HALIFAX_STANFIELD_INTL_A",
+            "start_year": 2012,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
+    "Kelowna": [
+        {
+            "station_id": 1130,
+            "station_name": "KELOWNA_A_OLD",
+            "start_year": 1953,
+            "end_year": 2013,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 51423,
+            "station_name": "KELOWNA_INTL_A",
+            "start_year": 2013,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
+    "Moncton": [
+        {
+            "station_id": 6106,
+            "station_name": "MONCTON_A_OLD",
+            "start_year": 1953,
+            "end_year": 2012,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 50133,
+            "station_name": "MONCTON_ROMEO_LEBLANC_INTL_A",
+            "start_year": 2012,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
+    "Montreal": [
+        {
+            "station_id": 5415,
+            "station_name": "MONTREAL_TRUDEAU_INTL_A_OLD",
+            "start_year": 1953,
+            "end_year": 2013,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 51157,
+            "station_name": "MONTREAL_TRUDEAU_INTL_A",
+            "start_year": 2013,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
+    "Osoyoos": [
+        {
+            "station_id": 1035,
+            "station_name": "OSOYOOS_OLD",
+            "start_year": 1953,
+            "end_year": 2013,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 51406,
+            "station_name": "OSOYOOS_CS",
+            "start_year": 2013,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
     "Regina": [
         {
             "station_id": 3002,
@@ -111,6 +166,22 @@ CITIES = {
         {
             "station_id": 50420,
             "station_name": "REGINA_INTL_A",
+            "start_year": 2012,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
+    "St. John's": [
+        {
+            "station_id": 6724,
+            "station_name": "ST_JOHNS_A_OLD",
+            "start_year": 1953,
+            "end_year": 2012,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 50089,
+            "station_name": "ST_JOHNS_INTL_A",
             "start_year": 2012,
             "end_year": 2025,
             "data_type": "daily",
@@ -132,18 +203,51 @@ CITIES = {
             "data_type": "daily",
         },
     ],
-    "Montreal": [
+    "Vancouver": [
         {
-            "station_id": 5415,
-            "station_name": "MONTREAL_TRUDEAU_INTL_A_OLD",
+            "station_id": 889,
+            "station_name": "VANCOUVER_INTL_A_OLD",
             "start_year": 1953,
             "end_year": 2013,
             "data_type": "daily",
         },
         {
-            "station_id": 51157,
-            "station_name": "MONTREAL_TRUDEAU_INTL_A",
+            "station_id": 51442,
+            "station_name": "VANCOUVER_INTL_A",
             "start_year": 2013,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
+    "Victoria": [
+        {
+            "station_id": 1202,
+            "station_name": "VICTORIA_INTL_A_OLD",
+            "start_year": 1953,
+            "end_year": 2013,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 51337,
+            "station_name": "VICTORIA_INTL_A",
+            "start_year": 2013,
+            "end_year": 2025,
+            "data_type": "daily",
+        },
+    ],
+    # --- NEW CITY: WINNIPEG ---
+    "Winnipeg": [
+        {
+            "station_id": 3698,
+            "station_name": "WINNIPEG_RICHARDSON_INTL_A_OLD",
+            "start_year": 1953,
+            "end_year": 2012,
+            "data_type": "daily",
+        },
+        {
+            "station_id": 51097,
+            "station_name": "WINNIPEG_RICHARDSON_INTL_A",
+            "start_year": 2012,
             "end_year": 2025,
             "data_type": "daily",
         },
